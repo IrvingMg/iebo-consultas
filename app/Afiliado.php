@@ -18,5 +18,5 @@ class Afiliado extends Model
         'num_p',
         'nom_p',
         'umf'
-    ]
+    ];
 }

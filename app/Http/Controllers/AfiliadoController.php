@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Afiliado;
 
 class AfiliadoController extends Controller
 {
@@ -24,6 +25,19 @@ class AfiliadoController extends Controller
     public function create()
     {
         //
+    }
+
+    public function buscar(Request $request) 
+    {
+        $campo = $request->input('campo');
+        $valor = $request->input('valor');
+
+        $afiliados = Afiliado::where($campo, "=", $valor)->get();
+        return view("results")
+            ->with("campo", $campo)
+            ->with("valor", $valor)
+            ->with("total", sizeof($afiliados))
+            ->with("afiliados", $afiliados);        
     }
 
     /**
