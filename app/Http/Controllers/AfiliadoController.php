@@ -24,7 +24,7 @@ class AfiliadoController extends Controller
      */
     public function create()
     {
-        //
+        return view("create");
     }
 
     public function buscar(Request $request) 
@@ -48,7 +48,9 @@ class AfiliadoController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        //return print($request->post());
+        Afiliado::create($request->post());
+        return view("create")->with('success','Product created successfully.');
     }
 
     /**

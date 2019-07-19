@@ -5,7 +5,12 @@
     <div class="row justify-content-center">
         <div class="col-md-12">
             <div class="card">
-                <div class="card-header">Estudiantes</div>
+                <div class="card-header">
+                    <span>Estudiantes</span>
+                    <a class="btn btn-primary float-right" href="{{ route('afiliados.create') }}" role="button">
+                        Registrar estudiante
+                    </a>
+                </div>
 
                 <div class="card-body">
                     @if (session('status'))
@@ -15,10 +20,8 @@
                     @endif
                     
                     <div class="alert alert-primary" role="alert">
-                        Tipo de Búsqueda: <strong>{{$campo}}</strong><br> 
-                        Valor: <strong>{{$valor}}</strong>
-                        <hr>
-                        Total de resultados: <strong>{{$total}}</strong>
+                        <strong>{{$total}}</strong> resultados para la búsqueda de <strong>{{$valor}}</strong> por
+                        <strong>{{$campo}}</strong>.  
                     </div>
                     <div class="table-responsive">
                     <table class="table table-striped table-hover">

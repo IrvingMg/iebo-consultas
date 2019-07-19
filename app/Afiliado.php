@@ -19,4 +19,6 @@ class Afiliado extends Model
         'nom_p',
         'umf'
     ];
+
+    public $timestamps = false;
 }
