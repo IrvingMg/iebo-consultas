@@ -48,9 +48,8 @@ class AfiliadoController extends Controller
      */
     public function store(Request $request)
     {
-        //return print($request->post());
         Afiliado::create($request->post());
-        return view("create")->with('success','Product created successfully.');
+        return view("create");
     }
 
     /**
@@ -72,7 +71,8 @@ class AfiliadoController extends Controller
      */
     public function edit($id)
     {
-        //
+        $afiliado = Afiliado::find($id);
+        return view("edit", compact("afiliado"));
     }
 
     /**
@@ -84,7 +84,10 @@ class AfiliadoController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $data = request()->except(['_method','_token']);
+        Afiliado::whereId($id)->update($data);
+
+        return redirect("home");
     }
 
     /**
@@ -95,6 +98,9 @@ class AfiliadoController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $afiliado = Afiliado::find($id);
+        $afiliado->delete();
+
+        return redirect("home");
     }
 }

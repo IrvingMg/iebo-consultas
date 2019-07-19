@@ -56,10 +56,14 @@
                                 <td> {{$afiliado->nom_p}} </td>
                                 <td> {{$afiliado->umf}} </td>
                                 <td> 
-                                    <div class="btn-group">
-                                        <a href="#" class="btn btn-warning">Editar</a>
-                                        <a href="#" class="btn btn-danger">Eliminar</a>
-                                    </div>
+                                    <form action="{{ route('afiliados.destroy',$afiliado->id) }}" method="POST">
+                                        <div class="btn-group">
+                                            <a href="{{ route('afiliados.edit',$afiliado->id) }}" class="btn btn-warning">Editar</a>
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="btn btn-danger">Eliminar</button>
+                                        </div>
+                                    </form>
                                 </td>
                             </tr>
                             @endforeach

@@ -14,12 +14,6 @@
                         </div>
                     @endif
 
-                    @if ($message = Session::get('success'))
-                        <div class="alert alert-success">
-                            <p>{{ $message }}</p>
-                        </div>
-                    @endif
-
                     <form method="POST" action="{{ route('afiliados.store') }}">
                         @csrf
                         <div class="form-group row">
