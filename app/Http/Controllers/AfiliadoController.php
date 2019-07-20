@@ -29,14 +29,17 @@ class AfiliadoController extends Controller
 
     public function buscar(Request $request) 
     {
-        $campo = $request->input('campo');
-        $valor = $request->input('valor');
+        $searchFields = $request->except(['_token', 'page']); 
+        $searchFields = array_filter($searchFields);
+        if (empty($searchFields)) {
+            return back();
+        }
 
-        $afiliados = Afiliado::where($campo, "=", $valor)->get();
+        //return $searchFields;
+        $afiliados = Afiliado::where($searchFields["campo"], "=", $searchFields["valor"])->paginate(10);
         return view("results")
-            ->with("campo", $campo)
-            ->with("valor", $valor)
-            ->with("total", sizeof($afiliados))
+            ->with("campo", $searchFields["campo"])
+            ->with("valor", $searchFields["valor"])
             ->with("afiliados", $afiliados);        
     }
 

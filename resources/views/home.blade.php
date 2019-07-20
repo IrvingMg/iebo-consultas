@@ -14,7 +14,7 @@
                         </div>
                     @endif
 
-                    <form method="POST" action="{{ route('afiliados.search') }}">
+                    <form method="GET" action="{{ route('afiliados.search') }}">
                         @csrf
                         <div class="form-group row">
                             <label for="busqueda" class="col-md-4 col-form-label text-md-right">{{ __('Tipo de búsqueda') }}</label>

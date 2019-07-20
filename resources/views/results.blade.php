@@ -70,7 +70,7 @@
                     @endif
                     
                     <div class="alert alert-primary" role="alert">
-                        <strong>{{$total}}</strong> resultados para la búsqueda de <strong>{{$valor}}</strong> por
+                        <strong>{{ $afiliados->total() }}</strong> resultados para la búsqueda de <strong>{{$valor}}</strong> por
                         <strong>{{$campo}}</strong>.  
                     </div>
                     <div class="table-responsive">
@@ -127,6 +127,7 @@
                             @endforeach
                         </tbody>
                     </table>
+                    {{ $afiliados->appends(request()->except('page'))->links() }}
                     </div>
                 </div>
             </div>

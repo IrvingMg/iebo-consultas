@@ -16,6 +16,7 @@ Route::get('/', function () {
 });
 Auth::routes();
 Route::get('/home', 'HomeController@index')->name('home');
-Route::resource('afiliados', 'AfiliadoController');
-Route::post('/afiliados/search', 'AfiliadoController@buscar')->name('afiliados.search');
+Route::get('/afiliados/search', 'AfiliadoController@buscar')->name('afiliados.search');
 Route::post('/afiliados/download', 'AfiliadoController@download')->name('afiliados.download');
+
+Route::resource('afiliados', 'AfiliadoController');
