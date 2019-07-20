@@ -1,12 +1,62 @@
 @extends('layouts.app')
-
 @section('content')
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script>
+    function download(filename, text) {
+        var element = document.createElement('a');
+        element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+        element.setAttribute('download', filename);
+
+        element.style.display = 'none';
+        document.body.appendChild(element);
+
+        element.click();
+
+        document.body.removeChild(element);
+    }
+
+    $(document).ready(function(){
+            $("#descargar").click(function(){
+            var boxes = document.getElementsByName("afiliadosId[]");
+            let afiliadosId = [];
+            for (var i=0; i < boxes.length; i++) {
+                if (boxes[i].checked) 
+                {
+                    afiliadosId.push(boxes[i].value);
+                }
+            }
+            
+            $.ajax({
+                url: "{{ route('afiliados.download') }}",
+                type: 'post',
+                data: {
+                    ids: afiliadosId
+                },
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                dataType: 'json',
+                success: function (result) {
+                    download(new Date(), result);
+                }
+            });
+        });
+    });
+    
+</script>
+
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-md-12">
             <div class="card">
                 <div class="card-header">
                     <span>Estudiantes</span>
+                    <button class="btn btn-success float-right" type="button" id="descargar">
+                            Descargar seleccionados
+                    </button>
+                    
+
                     <a class="btn btn-primary float-right" href="{{ route('afiliados.create') }}" role="button">
                         Registrar estudiante
                     </a>
@@ -27,6 +77,7 @@
                     <table class="table table-striped table-hover">
                         <thead class="text-center">
                             <tr>
+                                <th scope="col">ID</th>
                                 <th scope="col">Tabla</th>
                                 <th scope="col">Número de Seguro Social</th>
                                 <th scope="col">Nombre</th>
@@ -44,6 +95,13 @@
                         <tbody>
                             @foreach($afiliados as $afiliado)
                             <tr>
+                                <td>
+                                    <!-- Default unchecked -->
+                                    <div class="custom-control custom-checkbox">
+                                        <input type="checkbox" class="custom-control-input" id="estudiante-{{$afiliado->id}}" value="{{$afiliado->id}}" name="afiliadosId[]">
+                                        <label class="custom-control-label" for="estudiante-{{$afiliado->id}}">{{$afiliado->id}}</label>
+                                    </div>
+                                </td>
                                 <td> {{$afiliado->tabla}} </td>
                                 <td> {{$afiliado->afiliacion}} </td>
                                 <td> {{$afiliado->nombre}} </td>

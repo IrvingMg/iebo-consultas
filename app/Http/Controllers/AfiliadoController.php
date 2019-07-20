@@ -103,4 +103,30 @@ class AfiliadoController extends Controller
 
         return redirect("home");
     }
+
+    public function download(Request $request)
+    {
+        $afiliadosIds = $request->request->get('ids');
+        $texto = "";
+        $info = array();
+        foreach ($afiliadosIds as $id){
+            $info =  Afiliado::find($id);
+
+            $texto .= 
+                $info["id"]."\t".
+                $info["tabla"]."\t".
+                $info["afiliacion"]."\t".
+                $info["nombre"]."\t".
+                $info["mvto"]."\t".
+                $info["fec_mvto"]."\t".
+                $info["curp"]."\t".
+                $info["matricula"]."\t".
+                $info["semestre"]."\t".
+                $info["num_p"]."\t".
+                $info["nom_p"]."\t".
+                $info["umf"]."\n";
+        }
+
+        return json_encode($texto);
+    }
 }
