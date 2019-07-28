@@ -2,48 +2,8 @@
 @section('content')
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script type="text/javascript" src="{{ URL::asset('js/crud_ajax.js') }}"></script>
 <script>
-    function download(filename, text) {
-        var element = document.createElement('a');
-        element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
-        element.setAttribute('download', filename);
-
-        element.style.display = 'none';
-        document.body.appendChild(element);
-
-        element.click();
-
-        document.body.removeChild(element);
-    }
-
-    $(document).ready(function(){
-            $("#descargar").click(function(){
-            var boxes = document.getElementsByName("afiliadosId[]");
-            let afiliadosId = [];
-            for (var i=0; i < boxes.length; i++) {
-                if (boxes[i].checked) 
-                {
-                    afiliadosId.push(boxes[i].value);
-                }
-            }
-            
-            $.ajax({
-                url: "{{ route('afiliados.download') }}",
-                type: 'post',
-                data: {
-                    ids: afiliadosId
-                },
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                },
-                dataType: 'json',
-                success: function (result) {
-                    download(new Date(), result);
-                }
-            });
-        });
-    });
-    
 </script>
 
 <div class="container">
@@ -55,79 +15,296 @@
                     <button class="btn btn-success float-right" type="button" id="descargar">
                             Descargar seleccionados
                     </button>
-                    
-
-                    <a class="btn btn-primary float-right" href="{{ route('afiliados.create') }}" role="button">
-                        Registrar estudiante
-                    </a>
+                    <button type="button" class="btn btn-primary float-right" data-toggle="modal" data-target="#regModal">
+                            Registrar estudiante
+                    </button>
                 </div>
-
                 <div class="card-body">
                     @if (session('status'))
                         <div class="alert alert-success" role="alert">
                             {{ session('status') }}
                         </div>
                     @endif
-                    
+                    <div class="alert alert-success alert-dismissible collapse" role="alert" id="alerta-exito">
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
                     <div class="alert alert-primary" role="alert">
                         <strong>{{ $afiliados->total() }}</strong> resultados para la búsqueda de <strong>{{$valor}}</strong> por
                         <strong>{{$campo}}</strong>.  
                     </div>
                     <div class="table-responsive">
-                    <table class="table table-striped table-hover">
-                        <thead class="text-center">
-                            <tr>
-                                <th scope="col">ID</th>
-                                <th scope="col">Tabla</th>
-                                <th scope="col">Número de Seguro Social</th>
-                                <th scope="col">Nombre</th>
-                                <th scope="col">Mvto</th>
-                                <th scope="col">Fecha de mvto</th>
-                                <th scope="col">CURP</th>
-                                <th scope="col">Matrícula</th>
-                                <th scope="col">Semestre</th>
-                                <th scope="col">Número del plantel</th>
-                                <th scope="col">Nombre del plantel</th>
-                                <th scope="col">UMF</th>
-                                <th scope="col">Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach($afiliados as $afiliado)
-                            <tr>
-                                <td>
-                                    <!-- Default unchecked -->
-                                    <div class="custom-control custom-checkbox">
-                                        <input type="checkbox" class="custom-control-input" id="estudiante-{{$afiliado->id}}" value="{{$afiliado->id}}" name="afiliadosId[]">
-                                        <label class="custom-control-label" for="estudiante-{{$afiliado->id}}">{{$afiliado->id}}</label>
-                                    </div>
-                                </td>
-                                <td> {{$afiliado->tabla}} </td>
-                                <td> {{$afiliado->afiliacion}} </td>
-                                <td> {{$afiliado->nombre}} </td>
-                                <td> {{$afiliado->mvto}} </td>
-                                <td> {{$afiliado->fec_mvto}} </td>
-                                <td> {{$afiliado->curp}} </td>
-                                <td> {{$afiliado->matricula}} </td>
-                                <td> {{$afiliado->semestre}} </td>
-                                <td> {{$afiliado->num_p}} </td>
-                                <td> {{$afiliado->nom_p}} </td>
-                                <td> {{$afiliado->umf}} </td>
-                                <td> 
-                                    <form action="{{ route('afiliados.destroy',$afiliado->id) }}" method="POST">
-                                        <div class="btn-group">
-                                            <a href="{{ route('afiliados.edit',$afiliado->id) }}" class="btn btn-warning">Editar</a>
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="btn btn-danger">Eliminar</button>
+                        <table class="table table-striped table-hover">
+                            <thead class="text-center">
+                                <tr>
+                                    <th scope="col">ID</th>
+                                    <th scope="col">Tabla</th>
+                                    <th scope="col">Número de Seguro Social</th>
+                                    <th scope="col">Nombre</th>
+                                    <th scope="col">Mvto</th>
+                                    <th scope="col">Fecha de mvto</th>
+                                    <th scope="col">CURP</th>
+                                    <th scope="col">Matrícula</th>
+                                    <th scope="col">Semestre</th>
+                                    <th scope="col">Número del plantel</th>
+                                    <th scope="col">Nombre del plantel</th>
+                                    <th scope="col">UMF</th>
+                                    <th scope="col">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach($afiliados as $afiliado)
+                                <tr>
+                                    <td>
+                                        <div class="custom-control custom-checkbox">
+                                            <input type="checkbox" class="custom-control-input" id="estudiante-{{$afiliado->id}}" value="{{$afiliado->id}}" name="afiliadosId[]">
+                                            <label class="custom-control-label" for="estudiante-{{$afiliado->id}}">{{$afiliado->id}}</label>
                                         </div>
-                                    </form>
-                                </td>
-                            </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                    {{ $afiliados->appends(request()->except('page'))->links() }}
+                                    </td>
+                                    <td> {{$afiliado->tabla}} </td>
+                                    <td> {{$afiliado->afiliacion}} </td>
+                                    <td> {{$afiliado->nombre}} </td>
+                                    <td> {{$afiliado->mvto}} </td>
+                                    <td> {{$afiliado->fec_mvto}} </td>
+                                    <td> {{$afiliado->curp}} </td>
+                                    <td> {{$afiliado->matricula}} </td>
+                                    <td> {{$afiliado->semestre}} </td>
+                                    <td> {{$afiliado->num_p}} </td>
+                                    <td> {{$afiliado->nom_p}} </td>
+                                    <td> {{$afiliado->umf}} </td>
+                                    <td> 
+                                        <!-- Button trigger modal -->
+                                        <div class="btn-group">
+                                            <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#editModal-{{$afiliado->id}}">
+                                                Editar
+                                            </button>
+                                            <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#destroyModal-{{$afiliado->id}}">
+                                                Eliminar
+                                            </button>
+                                        </div>
+                                        <!-- Modal Editar -->
+                                        <div class="modal fade" id="editModal-{{$afiliado->id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                            <div class="modal-dialog" role="document">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title" id="exampleModalLabel">Editar</h5>
+                                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                            <span aria-hidden="true">&times;</span>
+                                                        </button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <form method="POST" action="{{ route('afiliados.update', $afiliado->id) }}" id="form-{{$afiliado->id}}">
+                                                            @csrf
+                                                            @method('PUT')
+                                                            <div class="form-group row">
+                                                                <label for="tabla" class="col-md-4 col-form-label text-md-right">{{ __('Tabla') }}</label>
+                                                                <div class="col-md-6">
+                                                                    <input id="tabla" type="text" class="form-control" name="tabla" value="{{$afiliado->tabla}}" readonly>
+                                                                </div>
+                                                            </div>
+                                                            <div class="form-group row">
+                                                                <label for="nss" class="col-md-4 col-form-label text-md-right">{{ __('Número de Seguro Social*') }}</label>
+                                                                <div class="col-md-6">
+                                                                    <input id="nss" type="text" class="form-control" name="afiliacion" value="{{$afiliado->afiliacion}}" required>
+                                                                </div>
+                                                            </div>
+                                                            <div class="form-group row">
+                                                                <label for="nombre" class="col-md-4 col-form-label text-md-right">{{ __('Nombre*') }}</label>
+                                                                <div class="col-md-6">
+                                                                    <input id="nombre" type="text" class="form-control" name="nombre" value="{{$afiliado->nombre}}" required>
+                                                                </div>
+                                                            </div>
+                                                            <div class="form-group row">
+                                                                <label for="mvto" class="col-md-4 col-form-label text-md-right">{{ __('Mvto*') }}</label>
+                                                                <div class="col-md-6">
+                                                                    <input id="mvto" type="number" class="form-control" name="mvto" value="{{$afiliado->mvto}}" required>
+                                                                </div>
+                                                            </div>
+                                                            <div class="form-group row">
+                                                                <label for="fec-mvto" class="col-md-4 col-form-label text-md-right">{{ __('Fecha de mvto*') }}</label>
+                                                                <div class="col-md-6">
+                                                                    <input id="fec-mvto" type="date" class="form-control" name="fec_mvto" value="{{$afiliado->fec_mvto}}" required>
+                                                                </div>
+                                                            </div>
+                                                            <div class="form-group row">
+                                                                <label for="curp" class="col-md-4 col-form-label text-md-right">{{ __('CURP*') }}</label>
+                                                                <div class="col-md-6">
+                                                                    <input id="curp" type="text" class="form-control" name="curp" value="{{$afiliado->curp}}" required>
+                                                                </div>
+                                                            </div>
+                                                            <div class="form-group row">
+                                                                <label for="matricula" class="col-md-4 col-form-label text-md-right">{{ __('Matrícula*') }}</label>
+                                                                <div class="col-md-6">
+                                                                    <input id="matricula" type="text" class="form-control" name="matricula" value="{{$afiliado->matricula}}" required>
+                                                                </div>
+                                                            </div>
+                                                            <div class="form-group row">
+                                                                <label for="sem" class="col-md-4 col-form-label text-md-right">{{ __('Semestre*') }}</label>
+                                                                <div class="col-md-6">
+                                                                    <input id="sem" type="number" class="form-control" name="semestre" value="{{$afiliado->semestre}}" required>
+                                                                </div>
+                                                            </div>
+                                                            <div class="form-group row">
+                                                                <label for="nump" class="col-md-4 col-form-label text-md-right">{{ __('Número del plantel*') }}</label>
+                                                                <div class="col-md-6">
+                                                                    <input id="nump" type="number" class="form-control" name="num_p" value="{{$afiliado->num_p}}" required>
+                                                                </div>
+                                                            </div>
+                                                            <div class="form-group row">
+                                                                <label for="nomp" class="col-md-4 col-form-label text-md-right">{{ __('Nombre del plantel*') }}</label>
+                                                                <div class="col-md-6">
+                                                                    <input id="nomp" type="text" class="form-control" name="nom_p" value="{{$afiliado->nom_p}}" required>
+                                                                </div>
+                                                            </div>
+                                                            <div class="form-group row">
+                                                                <label for="umf" class="col-md-4 col-form-label text-md-right">{{ __('UMF*') }}</label>
+                                                                <div class="col-md-6">
+                                                                    <input id="umf" type="number" class="form-control" name="umf" value="{{$afiliado->umf}}" required>
+                                                                </div>
+                                                            </div>
+                                                            <div class="form-group row">
+                                                                <div class="col-md-6 offset-md-4">
+                                                                    <div class="form-check">
+                                                                        <label class="float-right" >
+                                                                            <i>{{ __('* Campos obligatorios') }}</i>
+                                                                        </label>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="modal-footer">
+                                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                                                                <button type="submit" class="btn btn-primary btn-editar" value="{{$afiliado->id}}">Editar</button>
+                                                            </div>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!-- Modal Eliminar -->
+                                        <div class="modal fade" id="destroyModal-{{$afiliado->id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                            <div class="modal-dialog" role="document">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title" id="exampleModalLabel">Eliminar</h5>
+                                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                            <span aria-hidden="true">&times;</span>
+                                                        </button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        ¿Está seguro de eliminar el registro {{$afiliado->id}}?
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                                                        <button type="button" class="btn btn-primary btn-eliminar" value="{{$afiliado->id}}">Eliminar</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                        {{ $afiliados->appends(request()->except('page'))->links() }}
+                    </div>
+                </div>
+                <!-- Modal Registrar -->
+                <div class="modal fade" id="regModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLabel">Registrar</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <form method="POST" action="{{ route('afiliados.store') }}" id="form-reg">
+                                    @csrf
+                                    <div class="form-group row">
+                                        <label for="tabla" class="col-md-4 col-form-label text-md-right">{{ __('Tabla') }}</label>
+                                        <div class="col-md-6">
+                                            <input id="tabla" type="text" class="form-control" name="tabla" value="5" readonly>
+                                        </div>
+                                    </div>
+            
+                                    <div class="form-group row">
+                                        <label for="nss" class="col-md-4 col-form-label text-md-right">{{ __('Número de Seguro Social*') }}</label>
+                                        <div class="col-md-6">
+                                            <input id="nss" type="text" class="form-control" name="afiliacion" value="0" required>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label for="nombre" class="col-md-4 col-form-label text-md-right">{{ __('Nombre*') }}</label>
+                                        <div class="col-md-6">
+                                            <input id="nombre" type="text" class="form-control" name="nombre" value="NULL" required>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label for="mvto" class="col-md-4 col-form-label text-md-right">{{ __('Mvto*') }}</label>
+                                        <div class="col-md-6">
+                                            <input id="mvto" type="number" class="form-control" name="mvto" value="0" required>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label for="fec-mvto" class="col-md-4 col-form-label text-md-right">{{ __('Fecha de mvto*') }}</label>
+                                        <div class="col-md-6">
+                                            <input id="fec-mvto" type="date" class="form-control" name="fec_mvto" value="NULL" required>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label for="curp" class="col-md-4 col-form-label text-md-right">{{ __('CURP*') }}</label>
+                                        <div class="col-md-6">
+                                            <input id="curp" type="text" class="form-control" name="curp" value="NULL" required>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label for="matricula" class="col-md-4 col-form-label text-md-right">{{ __('Matrícula*') }}</label>
+                                        <div class="col-md-6">
+                                            <input id="matricula" type="text" class="form-control" name="matricula" value="0" required>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label for="sem" class="col-md-4 col-form-label text-md-right">{{ __('Semestre*') }}</label>
+                                        <div class="col-md-6">
+                                            <input id="sem" type="number" class="form-control" name="semestre" value="0" required>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label for="nump" class="col-md-4 col-form-label text-md-right">{{ __('Número del plantel*') }}</label>
+                                        <div class="col-md-6">
+                                            <input id="nump" type="number" class="form-control" name="num_p" value="0" required>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label for="nomp" class="col-md-4 col-form-label text-md-right">{{ __('Nombre del plantel*') }}</label>
+                                        <div class="col-md-6">
+                                            <input id="nomp" type="text" class="form-control" name="nom_p" value="NULL" required>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label for="umf" class="col-md-4 col-form-label text-md-right">{{ __('UMF*') }}</label>
+                                        <div class="col-md-6">
+                                            <input id="umf" type="number" class="form-control" name="umf" value="0" required>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <div class="col-md-6 offset-md-4">
+                                            <div class="form-check">
+                                                <label class="float-right" >
+                                                    <i>{{ __('* Campos obligatorios') }}</i>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                                        <button type="submit" class="btn btn-primary btn-registrar">Registrar</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

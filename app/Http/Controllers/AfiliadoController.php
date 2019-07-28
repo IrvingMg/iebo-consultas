@@ -24,7 +24,7 @@ class AfiliadoController extends Controller
      */
     public function create()
     {
-        return view("create");
+        //
     }
 
     public function buscar(Request $request) 
@@ -52,7 +52,10 @@ class AfiliadoController extends Controller
     public function store(Request $request)
     {
         Afiliado::create($request->post());
-        return view("create");
+        
+        return response()->json([
+            'success' => '¡Registro guardado con éxito!'
+        ]);
     }
 
     /**
@@ -74,8 +77,7 @@ class AfiliadoController extends Controller
      */
     public function edit($id)
     {
-        $afiliado = Afiliado::find($id);
-        return view("edit", compact("afiliado"));
+        //
     }
 
     /**
@@ -90,7 +92,9 @@ class AfiliadoController extends Controller
         $data = request()->except(['_method','_token']);
         Afiliado::whereId($id)->update($data);
 
-        return redirect("home");
+        return response()->json([
+            'success' => '¡Registro editado con éxito!'
+        ]);
     }
 
     /**
@@ -104,7 +108,9 @@ class AfiliadoController extends Controller
         $afiliado = Afiliado::find($id);
         $afiliado->delete();
 
-        return redirect("home");
+        return response()->json([
+            'success' => '¡Registro eliminado con éxito!'
+        ]);
     }
 
     public function download(Request $request)
@@ -114,6 +120,7 @@ class AfiliadoController extends Controller
         $info = array();
         foreach ($afiliadosIds as $id){
             $info =  Afiliado::find($id);
+            $info["afiliacion"] = str_pad($info["afiliacion"], 11, "0", STR_PAD_LEFT);
 
             $texto .= 
                 $info["id"]."\t".
