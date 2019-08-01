@@ -14,7 +14,7 @@
 Route::get('/', function () {
     return view('welcome');
 });
-Auth::routes();
+Auth::routes(["register" => false]);
 Route::get('/home', 'HomeController@index')->name('home');
 Route::get('/afiliados/search', 'AfiliadoController@buscar')->name('afiliados.search');
 Route::post('/afiliados/download', 'AfiliadoController@download')->name('afiliados.download');

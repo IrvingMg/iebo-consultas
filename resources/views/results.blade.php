@@ -3,8 +3,6 @@
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 <script type="text/javascript" src="{{ URL::asset('js/crud_ajax.js') }}"></script>
-<script>
-</script>
 
 <div class="container">
     <div class="row justify-content-center">
@@ -26,13 +24,24 @@
                         </div>
                     @endif
                     <div class="alert alert-success alert-dismissible collapse" role="alert" id="alerta-exito">
+                        <h4 class="alert-heading">Éxito</h4>
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="alert alert-danger alert-dismissible collapse" role="alert" id="alerta-error">
+                        <h4 class="alert-heading">Error</h4>
+                        <p>Seleccione al menos un registro para descargar.</p>
                         <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
                     <div class="alert alert-primary" role="alert">
-                        <strong>{{ $afiliados->total() }}</strong> resultados para la búsqueda de <strong>{{$valor}}</strong> por
-                        <strong>{{$campo}}</strong>.  
+                        <h4 class="alert-heading">Resultados de la búsqueda</h4>
+                        <p>
+                            Se encontraron <strong>{{ $afiliados->total() }}</strong> resultados para la búsqueda de <strong>{{$valor}}</strong> por
+                            <strong>{{$campo}}</strong>.  
+                        </p>
                     </div>
                     <div class="table-responsive">
                         <table class="table table-striped table-hover">
@@ -207,6 +216,21 @@
                             </tbody>
                         </table>
                         {{ $afiliados->appends(request()->except('page'))->links() }}
+                    </div>
+                    <br>
+                    <div class="alert alert-warning" role="alert">
+                        <h4 class="alert-heading">Nota</h4>
+                        <p>
+                            El número de tabla identifica la base de datos de la cual fueron obtenidos los registros.
+                            Dichos identificadores se asignaron de la siguiente manera:
+                            <ul>
+                                <li>1 - Coincidencias CURP.</li>
+                                <li>2 - Coincidencias Nombre y Fecha.</li>
+                                <li>3 - Coincidencias CURP, Nombre y Fecha.</li>
+                                <li>4 - Remanentes CURP, Nombre y Fecha.</li>
+                                <li>5 - Registros nuevos.</li>
+                            </ul>
+                        </p>
                     </div>
                 </div>
                 <!-- Modal Registrar -->

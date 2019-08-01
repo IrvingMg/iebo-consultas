@@ -21,6 +21,12 @@ $(document).ready(function(){
             }
         }
         
+        if(afiliadosId.length == 0) {
+            $("#alerta-error").show()
+
+            return;
+        }
+
         $.ajax({
             url: "/afiliados/download",
             type: 'post',
@@ -51,9 +57,9 @@ $(document).ready(function(){
                 dataType: 'json',
                 success: function (result) {
                     $('#regModal').modal('hide');
-                    $("#alerta-exito").append("<strong>"+result['success']+"</strong>");
+                    $("#alerta-exito").append(result['success']);
                     $("#alerta-exito").show()
-                    setTimeout(function () { document.location.reload(true); }, 500);
+                    setTimeout(function () { document.location.reload(true); }, 750);
                 }
             });
 
@@ -73,9 +79,9 @@ $(document).ready(function(){
                 dataType: 'json',
                 success: function (result) {
                     $('#editModal-'+id).modal('hide');
-                    $("#alerta-exito").append("<strong>"+result['success']+"</strong>");
+                    $("#alerta-exito").append(result['success']);
                     $("#alerta-exito").show()
-                    setTimeout(function () { document.location.reload(true); }, 500);
+                    setTimeout(function () { document.location.reload(true); }, 750);
                 }
             });
 
