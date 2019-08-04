@@ -32,7 +32,7 @@ class AfiliadoController extends Controller
         define("PAG", 25);
 
         $searchFields = $request->except(['_token', 'page']); 
-        $searchFields = array_filter($searchFields);
+
         if (empty($searchFields)) {
             return back();
         }

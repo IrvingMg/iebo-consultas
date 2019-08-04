@@ -82,7 +82,7 @@
                                         if (!strpos($date, "-")) {
                                             // Genera el formato de fecha 'yyyy-mm-dd'
                                             $dateParts = array_pad(explode('/', $date), 3, null);
-                                            $date = $dateParts[2]."-".$dateParts[0]."-".$dateParts[1];
+                                            $date = $dateParts['2']."-".$dateParts['0']."-".$dateParts['1'];
                                         }
                                     @endphp 
                                     <td> {{$date}} </td>
