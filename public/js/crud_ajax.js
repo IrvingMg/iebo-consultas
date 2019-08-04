@@ -81,11 +81,14 @@ $(document).ready(function(){
         if($(e.target).is(".btn-editar")) {
             e.preventDefault();
             const id = e.target.value;
+
+            var data = $("#form-"+id).serialize();
+            data['_method'] = 'PUT';
     
             $.ajax({
                 url: $("#form-"+id).attr('action'),
-                type: 'put',
-                data: $("#form-"+id).serialize(),
+                type: 'post',
+                data: data,
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 },
@@ -103,19 +106,20 @@ $(document).ready(function(){
         if($(e.target).is(".btn-eliminar")) {
             const id = e.target.value;
 
+            var data = {id : id};
+            data['_method'] = 'DELETE';
+
             $.ajax({
                 url: "/afiliados/"+id,
-                type: 'delete',
-                data: {
-                    id: id
-                },
+                type: 'post',
+                data: data,
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 },
                 dataType: 'json',
                 success: function (result) {
                     $('#destroyModal-'+id).modal('hide');
-                    $("#alerta-exito").append("<strong>"+result['success']+"</strong>");
+                    $("#alerta-exito").append(result['success']);
                     $("#alerta-exito").show()
                     setTimeout(function () { document.location.reload(true); }, 500);
                 }
