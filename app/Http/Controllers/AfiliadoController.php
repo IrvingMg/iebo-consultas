@@ -29,14 +29,66 @@ class AfiliadoController extends Controller
 
     public function buscar(Request $request) 
     {
+        define("PAG", 25);
+
         $searchFields = $request->except(['_token', 'page']); 
         $searchFields = array_filter($searchFields);
         if (empty($searchFields)) {
             return back();
         }
 
-        //return $searchFields;
-        $afiliados = Afiliado::where($searchFields["campo"], "=", $searchFields["valor"])->paginate(10);
+        switch($searchFields["campo"]) {
+            case "afiliacion":
+                $afiliados = Afiliado::where("afiliacion", "=", $searchFields["valor"])
+                    ->where("tabla", "!=", 6)
+                    ->paginate(PAG);
+                break;
+            case "nombre":
+                $afiliados = Afiliado::where("nombre", "LIKE", "%".$searchFields["valor"]."%")
+                    ->where("tabla", "!=", 6)
+                    ->paginate(PAG);
+                break;
+            case "mvto":
+                $afiliados = Afiliado::where("mvto", "=", $searchFields["valor"])
+                    ->where("tabla", "!=", 6)
+                    ->paginate(PAG);
+                break;
+            case "fec_mvto":
+                $afiliados = Afiliado::where("fec_mvto", "LIKE", "%".$searchFields["valor"]."%")
+                    ->where("tabla", "!=", 6)
+                    ->paginate(PAG);
+                break;
+            case "curp":
+                $afiliados = Afiliado::where("curp", "=", $searchFields["valor"])
+                    ->where("tabla", "!=", 6)
+                    ->paginate(PAG);
+                break;
+            case "matricula":
+                $afiliados = Afiliado::where("matricula", "=", $searchFields["valor"])
+                    ->where("tabla", "!=", 6)
+                    ->paginate(PAG);
+                break;
+            case "semestre":
+                $afiliados = Afiliado::where("semestre", "=", $searchFields["valor"])
+                    ->where("tabla", "!=", 6)
+                    ->paginate(PAG);
+                break;
+            case "num_p":
+                $afiliados = Afiliado::where("num_p", "=", $searchFields["valor"])
+                    ->where("tabla", "!=", 6)
+                    ->paginate(PAG);
+                break;
+            case "nom_p":
+                $afiliados = Afiliado::where("nom_p", "LIKE", "%".$searchFields["valor"]."%")
+                    ->where("tabla", "!=", 6)
+                    ->paginate(PAG);
+                break;
+            case "umf":
+                $afiliados = Afiliado::where("umf", "=", $searchFields["valor"])
+                    ->where("tabla", "!=", 6)
+                    ->paginate(PAG);
+        }
+        
         return view("results")
             ->with("campo", $searchFields["campo"])
             ->with("valor", $searchFields["valor"])
@@ -105,8 +157,7 @@ class AfiliadoController extends Controller
      */
     public function destroy($id)
     {
-        $afiliado = Afiliado::find($id);
-        $afiliado->delete();
+        Afiliado::where("id", $id)->update(array("tabla" => 6));
 
         return response()->json([
             'success' => '¡Registro eliminado con éxito!'
@@ -123,8 +174,6 @@ class AfiliadoController extends Controller
             $info["afiliacion"] = str_pad($info["afiliacion"], 11, "0", STR_PAD_LEFT);
 
             $texto .= 
-                $info["id"]."\t".
-                $info["tabla"]."\t".
                 $info["afiliacion"]."\t".
                 $info["nombre"]."\t".
                 $info["mvto"]."\t".

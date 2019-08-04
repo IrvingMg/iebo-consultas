@@ -4,18 +4,12 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 <script type="text/javascript" src="{{ URL::asset('js/crud_ajax.js') }}"></script>
 
-<div class="container">
+<div class="container-fluid">
     <div class="row justify-content-center">
         <div class="col-md-12">
             <div class="card">
                 <div class="card-header">
                     <span>Estudiantes</span>
-                    <button class="btn btn-success float-right" type="button" id="descargar">
-                            Descargar seleccionados
-                    </button>
-                    <button type="button" class="btn btn-primary float-right" data-toggle="modal" data-target="#regModal">
-                            Registrar estudiante
-                    </button>
                 </div>
                 <div class="card-body">
                     @if (session('status'))
@@ -29,25 +23,33 @@
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
-                    <div class="alert alert-danger alert-dismissible collapse" role="alert" id="alerta-error">
-                        <h4 class="alert-heading">Error</h4>
-                        <p>Seleccione al menos un registro para descargar.</p>
-                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
                     <div class="alert alert-primary" role="alert">
                         <h4 class="alert-heading">Resultados de la búsqueda</h4>
                         <p>
-                            Se encontraron <strong>{{ $afiliados->total() }}</strong> resultados para la búsqueda de <strong>{{$valor}}</strong> por
-                            <strong>{{$campo}}</strong>.  
+                            Se encontraron <strong>{{ $afiliados->total() }}</strong> resultados para la búsqueda de tipo 
+                            <strong>{{$campo}}</strong> y valor <strong>{{$valor}}</strong>.  
                         </p>
                     </div>
+                    <p>
+                        <button type="button" class="btn btn-outline-secondary" title="Seleccionar todos" id="btn-checkAll">
+                                <i class="fas fa-user-check"></i>
+                        </button>
+
+                        <button class="btn btn-outline-secondary" type="button" id="descargar">
+                                Descargar seleccionados
+                        </button>
+                        <button type="button" class="btn btn-primary float-right" data-toggle="modal" data-target="#regModal" title="Registrar">
+                                <i class="fas fa-user-plus"></i>
+                                Registrar
+                        </button>
+                    </p>
                     <div class="table-responsive">
-                        <table class="table table-striped table-hover">
+                        <table class="table table-striped table-hover table-sm">
                             <thead class="text-center">
                                 <tr>
-                                    <th scope="col">ID</th>
+                                    <th scope="col">
+                                        ID
+                                    </th>
                                     <th scope="col">Tabla</th>
                                     <th scope="col">Número de Seguro Social</th>
                                     <th scope="col">Nombre</th>
@@ -75,7 +77,15 @@
                                     <td> {{$afiliado->afiliacion}} </td>
                                     <td> {{$afiliado->nombre}} </td>
                                     <td> {{$afiliado->mvto}} </td>
-                                    <td> {{$afiliado->fec_mvto}} </td>
+                                    @php   
+                                        $date = $afiliado->fec_mvto;
+                                        if (!strpos($date, "-")) {
+                                            // Genera el formato de fecha 'yyyy-mm-dd'
+                                            $dateParts = array_pad(explode('/', $date), 3, null);
+                                            $date = $dateParts[2]."-".$dateParts[0]."-".$dateParts[1];
+                                        }
+                                    @endphp 
+                                    <td> {{$date}} </td>
                                     <td> {{$afiliado->curp}} </td>
                                     <td> {{$afiliado->matricula}} </td>
                                     <td> {{$afiliado->semestre}} </td>
@@ -85,16 +95,16 @@
                                     <td> 
                                         <!-- Button trigger modal -->
                                         <div class="btn-group">
-                                            <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#editModal-{{$afiliado->id}}">
-                                                Editar
+                                            <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#editModal-{{$afiliado->id}}" title="Editar">
+                                                <i class="fas fa-user-edit"></i>
                                             </button>
-                                            <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#destroyModal-{{$afiliado->id}}">
-                                                Eliminar
+                                            <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#destroyModal-{{$afiliado->id}}" title="Eliminar">
+                                                <i class="fas fa-trash-alt"></i>
                                             </button>
                                         </div>
                                         <!-- Modal Editar -->
                                         <div class="modal fade" id="editModal-{{$afiliado->id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                            <div class="modal-dialog" role="document">
+                                            <div class="modal-dialog mw-100 w-50" role="document">
                                                 <div class="modal-content">
                                                     <div class="modal-header">
                                                         <h5 class="modal-title" id="exampleModalLabel">Editar</h5>
@@ -133,7 +143,7 @@
                                                             <div class="form-group row">
                                                                 <label for="fec-mvto" class="col-md-4 col-form-label text-md-right">{{ __('Fecha de mvto*') }}</label>
                                                                 <div class="col-md-6">
-                                                                    <input id="fec-mvto" type="date" class="form-control" name="fec_mvto" value="{{$afiliado->fec_mvto}}" required>
+                                                                    <input id="fec-mvto" type="date" class="form-control" name="fec_mvto" value="{{$date}}" required>
                                                                 </div>
                                                             </div>
                                                             <div class="form-group row">
@@ -235,7 +245,7 @@
                 </div>
                 <!-- Modal Registrar -->
                 <div class="modal fade" id="regModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                    <div class="modal-dialog" role="document">
+                    <div class="modal-dialog mw-100 w-50" role="document">
                         <div class="modal-content">
                             <div class="modal-header">
                                 <h5 class="modal-title" id="exampleModalLabel">Registrar</h5>
@@ -274,7 +284,7 @@
                                     <div class="form-group row">
                                         <label for="fec-mvto" class="col-md-4 col-form-label text-md-right">{{ __('Fecha de mvto*') }}</label>
                                         <div class="col-md-6">
-                                            <input id="fec-mvto" type="date" class="form-control" name="fec_mvto" value="NULL" required>
+                                            <input id="fec-mvto" type="date" class="form-control" name="fec_mvto" value="2019-01-01" required>
                                         </div>
                                     </div>
                                     <div class="form-group row">

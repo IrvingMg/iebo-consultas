@@ -11,6 +11,25 @@ function download(filename, text) {
 
 
 $(document).ready(function(){
+    var boxesChecked = false;
+
+    $("#btn-checkAll").click(function(){
+        
+        boxesChecked = !boxesChecked;
+        if(boxesChecked) {
+            $(this).removeClass("btn btn-outline-secondary");
+            $(this).addClass("btn btn-outline-primary");
+        } else {
+            $(this).removeClass("btn btn-outline-primary");
+            $(this).addClass("btn btn-outline-secondary");
+        }
+
+        var boxes = document.getElementsByName("afiliadosId[]");
+        for(var i=0; i < boxes.length; i++) {
+            boxes[i].checked = boxesChecked;
+        }
+    });
+
     $("#descargar").click(function(){
         var boxes = document.getElementsByName("afiliadosId[]");
         let afiliadosId = [];
@@ -19,12 +38,6 @@ $(document).ready(function(){
             {
                 afiliadosId.push(boxes[i].value);
             }
-        }
-        
-        if(afiliadosId.length == 0) {
-            $("#alerta-error").show()
-
-            return;
         }
 
         $.ajax({
