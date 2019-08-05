@@ -166,6 +166,8 @@ class AfiliadoController extends Controller
 
     public function download(Request $request)
     {
+        define("NUM_PATRON", "D685145032");
+
         $afiliadosIds = $request->request->get('ids');
         $texto = "";
         $info = array();
@@ -174,6 +176,7 @@ class AfiliadoController extends Controller
             $info["afiliacion"] = str_pad($info["afiliacion"], 11, "0", STR_PAD_LEFT);
 
             $texto .= 
+                NUM_PATRON."\t".
                 $info["afiliacion"]."\t".
                 $info["nombre"]."\t".
                 $info["mvto"]."\t".
