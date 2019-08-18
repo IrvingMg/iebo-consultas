@@ -14,34 +14,36 @@ Para ejecutar el proyectos de forma local seguir las siguientes instrucciones:
 git clone https://github.com/IrvingMg/IEBOSistemaConsultas-App
 ```
 
-2. Copiar archivo `.env.example` y renombrarlo como `.env`
+2. Crear una nueva base de datos en MySQL.
 
-3. Abrir archivo `.env` y configurar la conexión con la base de datos 
+3. Utilizando la shell de XAMPP, importar las tablas del archivo `iebo_app.sql` en la nueva base de datos creada 
+```
+mysql -u nombre_usuario -p nombre_base_de_datos < ruta/iebo_app.sql
+```
+
+4. Renombrar el archivo `.env.example` como `.env`
+
+5. Configurar la conexión con la base de datos en el archivo `.env`
 ```
 DB_CONNECTION=mysql
 DB_HOST=127.0.0.1
 DB_PORT=3306
-DB_DATABASE=homestead
-DB_USERNAME=homestead
-DB_PASSWORD=secret
+DB_DATABASE= nombre_base_de_datos
+DB_USERNAME= nombre_usuario
+DB_PASSWORD= password
 ```
 
-4. Instalar dependencias
+6. Instalar dependencias
 ```
 composer install
 ```
 
-5. Ejecutar el comando
+7. Ejecutar el comando
 ```
 php artisan key:generate
 ```
 
-6. Ejecutar migraciones
-```
-php artisan migrate
-```
-
-7. Ejecutar proyecto localmente
+8. Ejecutar proyecto localmente
 ```
 php artisan serve
 ```
